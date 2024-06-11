@@ -1,7 +1,7 @@
 import express from "express"
 import { createServer } from "node:http";
 import { Server } from "socket.io";
-import { ACTIONS } from "./SocketActions.js";
+import { ACTIONS } from "./src/helpers/SocketActions.js";
 import path from "node:path";
 import { fileURLToPath } from 'url';
 
@@ -13,10 +13,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
-app.use(express.static(path.join(__dirname, '../dist')));
+app.use(express.static(path.join(__dirname, './dist')));
 // Fallback to index.html for single-page applications
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/index.html'));
+  res.sendFile(path.join(__dirname, './dist/index.html'));
 });
 
 app.get("/", (req, res) => {

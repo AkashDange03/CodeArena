@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import CodeMirror from '@uiw/react-codemirror';
 import { autoCloseTags, javascript } from '@codemirror/lang-javascript';
 import {dracula} from "@uiw/codemirror-theme-dracula"
-import { ACTIONS } from '../../Server/SocketActions.js';
+import { ACTIONS } from '../helpers/SocketActions.js';
 
 function EditorComponent({socketRef,roomId,onCodeChange}) {
     const [value, setValue] = React.useState("console.log('hello world!');");

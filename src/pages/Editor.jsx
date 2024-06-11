@@ -3,7 +3,7 @@ import AppTitle from '../component/AppTitle'
 import Client from '../component/Client'
 import EditorComponent from '../component/EditorComponent'
 import { initSocket } from '../helpers/socket';
-import {ACTIONS} from "../../Server/SocketActions.js"
+import { ACTIONS } from '../helpers/SocketActions.js';
 import { useGlobalContext } from '../context/GlobalContext';
 import { toast } from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
