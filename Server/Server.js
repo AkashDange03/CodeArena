@@ -1,7 +1,7 @@
 import express from "express"
 import { createServer } from "node:http";
 import { Server } from "socket.io";
-import { ACTIONS } from "./src/helpers/SocketActions.js";
+import { ACTIONS } from "./SocketActions";
 import path from "node:path";
 import { fileURLToPath } from 'url';
 
