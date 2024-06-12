@@ -7,7 +7,10 @@ import { fileURLToPath } from 'url';
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server);
+const io = new Server(server,{ cors: {
+    origin: "*",  // You can restrict this to your frontend domain
+    methods: ["GET", "POST"]
+}});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,7 +19,7 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, './dist')));
 // Fallback to index.html for single-page applications
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, './dist/index.html'));
+    res.sendFile(path.join(__dirname, './dist/index.html'));
 });
 
 app.get("/", (req, res) => {
@@ -52,7 +55,7 @@ io.on("connection", (socket) => {
         const clients = getAllConnectedClients(roomId);
         // console.log(clients)
 
-         clients.forEach(({ socketId }) => {
+        clients.forEach(({ socketId }) => {
 
             //sending data to client
             io.to(socketId).emit(ACTIONS.JOINED, {
@@ -63,8 +66,8 @@ io.on("connection", (socket) => {
         });
     })
 
-    socket.on(ACTIONS.CODE_CHANGE,({roomId,code})=>{
-        socket.to(roomId).emit(ACTIONS.CODE_CHANGE,{
+    socket.on(ACTIONS.CODE_CHANGE, ({ roomId, code }) => {
+        socket.to(roomId).emit(ACTIONS.CODE_CHANGE, {
             code
         })
     });
@@ -74,12 +77,12 @@ io.on("connection", (socket) => {
     });
 
 
-    socket.on("disconnecting",()=>{
+    socket.on("disconnecting", () => {
         const rooms = [...socket.rooms]; // getting all rooms to which client is connected
-        rooms.forEach((roomId)=>{
-            socket.in(roomId).emit(ACTIONS.DISCONNECTED,{
+        rooms.forEach((roomId) => {
+            socket.in(roomId).emit(ACTIONS.DISCONNECTED, {
                 socketId: socket.id,
-                username : userSocketMap[socket.id]
+                username: userSocketMap[socket.id]
             })
         })
         delete userSocketMap[socket.id]; // deleting user from  map
