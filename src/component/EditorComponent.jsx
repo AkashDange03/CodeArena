@@ -8,10 +8,8 @@ function EditorComponent({socketRef,roomId,onCodeChange}) {
     const [value, setValue] = React.useState("console.log('hello world!');");
 
     const onChange = React.useCallback((code, viewUpdate) => {
-        console.log('val:', code);
-
+        // console.log('val:', code);
         onCodeChange(code)
-
         socketRef.current.emit(ACTIONS.CODE_CHANGE,{
             roomId,
             code
@@ -33,7 +31,7 @@ function EditorComponent({socketRef,roomId,onCodeChange}) {
         };
     }, [socketRef.current]);
 
-    return <CodeMirror className='text-lg'  value={value} height="100vh" theme={dracula} extensions={[javascript({ jsx: true })]} onChange={onChange} />;
+    return <CodeMirror className='text-lg'  value={value} height="60vh" theme={dracula} extensions={[javascript({ jsx: true })]} onChange={onChange} />;
 }
 
 export default EditorComponent

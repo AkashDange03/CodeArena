@@ -7,33 +7,27 @@ import { ACTIONS } from '../helpers/SocketActions.js';
 import { useGlobalContext } from '../context/GlobalContext';
 import { toast } from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
+import { executeCode } from '../helpers/api.js';
+
 function Editor() {
+
     const socketRef = useRef(null);
     const codeRef = useRef(null);
-    const dataContext = useGlobalContext();
+    const outPutRef = useRef(null);
+    const dataContext = useGlobalContext();//getting context values
     const navigate = useNavigate();
-    const {roomId} = useParams()
-    const [clients, setClients] = useState([
-        {
-            socketId: 1,
-            username: "akash dange"
-        },
-        {
-            socketId: 2,
-            username: "Jhone doe"
-        },
-        {
-            socketId: 3,
-            username: "Tukaram Dange"
-        },
-       
+    const { roomId } = useParams()
+    const [clients, setClients] = useState([{
+        socketId:1,
+        username:"akash"
+    }])
 
-    ])
+    const phoneStyle = "absolute w-full top-[50px]  z-10 block";
+    const [menu,setMenu]=useState(false);
 
-
-    useEffect(()=>{
-        const init = async()=>{
-            socketRef.current =  await initSocket();
+    useEffect(() => {
+        const init = async () => {
+            socketRef.current = await initSocket();
             socketRef.current.on('connect_error', (err) => handleErrors(err));
             socketRef.current.on('connect_failed', (err) => handleErrors(err));
 
@@ -43,13 +37,13 @@ function Editor() {
                 navigate('/');
             }
 
-            socketRef.current.emit(ACTIONS.JOIN,{
+            socketRef.current.emit(ACTIONS.JOIN, {
                 roomId,
-                username:dataContext.userName
+                username: dataContext.userName
             })
 
             //listening to joined event 
-            socketRef.current.on(ACTIONS.JOINED,({clients,username,socketId})=>{
+            socketRef.current.on(ACTIONS.JOINED, ({ clients, username, socketId }) => {
                 setClients(clients);
                 console.log(username);
                 if (username !== dataContext.userName) {
@@ -57,34 +51,59 @@ function Editor() {
                     console.log(`${username} joined`);
                 }
 
-                socketRef.current.emit(ACTIONS.SYNC_CODE,{
+                socketRef.current.emit(ACTIONS.SYNC_CODE, {
                     socketId,
-                    code:codeRef.current
+                    code: codeRef.current
                 })
-                
+
+                //listening to output_code
+                socketRef.current.on(ACTIONS.OUTPUT_CODE, ({ output }) => {
+                    if (output) {
+                        outPutRef.current.value = output;
+                    }
+                })
+
             })
 
 
             //listening for diconnecting
-            socketRef.current.on(ACTIONS.DISCONNECTED,({socketId,username})=>{
+            socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
                 toast.success(`${username} left the room`);
-                setClients((prev)=>{
-                    return prev.filter((client)=>client.socketId!==socketId)
+                setClients((prev) => {
+                    return prev.filter((client) => client.socketId !== socketId)
                 })
             })
         }
 
         init()
 
-        return ()=>{
+        return () => {
             socketRef.current.disconnect();
             socketRef.current.off(ACTIONS.JOINED);
             socketRef.current.off(ACTIONS.DISCONNECTED);
         }
 
-    },[])
+    }, [])
 
-    const copyRoomId= async()=>{
+    const RunCode = async () => {
+        try {
+            const code = codeRef.current; 
+            const data = await executeCode(code);
+            // console.log(data);
+            outPutRef.current.value = data.run.output;
+
+            //emmiting output to server
+            socketRef.current.emit(ACTIONS.OUTPUT_CODE, {
+                roomId,
+                output: outPutRef.current.value
+            })
+
+        } catch (err) {
+            console.error("Error running code:", err);
+        }
+    };
+
+    const copyRoomId = async () => {
         try {
             await navigator.clipboard.writeText(roomId);
             toast.success('Room ID has been copied to your clipboard');
@@ -94,7 +113,7 @@ function Editor() {
         }
     }
 
-    const leave = ()=>{
+    const leave = () => {
         navigate("/");
     }
 
@@ -103,7 +122,10 @@ function Editor() {
             {/* wrapper */}
             <div className='flex w-full h-[100vh]'>
                 {/*left side container */}
-                <aside className=' bg-[#640D6B] w-[300px] h-full flex flex-col justify-between py-4 px-4'>
+                <aside className='text-white pl-2 pt-2 md:hidden'>
+                    <button className='font-bold text-xl border px-2 pb-1' onClick={()=>setMenu(!menu)}>=</button>
+                </aside>
+                <aside className={`bg-[#640D6B] border-r rounded-lg border-r-white md:w-[300px] h-full md:flex flex-col justify-between mr-2 py-4 px-4 ${menu ? phoneStyle :'hidden' }`}>
                     <div>
                         <AppTitle />
                         <div className='text-white mt-2'>
@@ -112,7 +134,7 @@ function Editor() {
                             {/* connected clients */}
                             <div className='flex flex-wrap'>
                                 {
-                                    clients.map((client) => (
+                                   clients && clients.map((client) => (
                                         <Client key={client.socketId} username={client.username} />
                                     ))
                                 }
@@ -122,20 +144,25 @@ function Editor() {
 
                     <div className='flex flex-col gap-2'>
                         <button className='bg-white text-black px-10 py-2 rounded-md' onClick={copyRoomId}>Copy Room Id</button>
-                        <button className='bg-green-500 px-10 py-2 rounded-md' onClick={leave}>Leave</button>
+                        <button className='bg-green-600 px-10 py-2 rounded-md text-white font-bold' onClick={leave}>Leave</button>
                     </div>
 
                 </aside>
 
                 {/* Right side container */}
-                <aside className='w-[80%] mx-auto'>
-                    <EditorComponent socketRef={socketRef} roomId={roomId} onCodeChange={(code)=>codeRef.current=code} />
-                </aside>            
+                <aside className='w-[80%] flex flex-col'>
+                    <div className='flex justify-center'>
+                        <button className='bg-green-600 px-10 py-2 rounded-md my-2 text-white font-bold' onClick={RunCode}>Run</button>
+                    </div>
+                    <EditorComponent socketRef={socketRef} roomId={roomId} onCodeChange={(code) => codeRef.current = code} />
+                    <textarea className='h-[40vh] w-full bg-slate-900 text-white outline-none  px-6' placeholder='output:' id="OutputBox" ref={outPutRef}>
+                    </textarea>
+                </aside>
 
             </div>
 
         </>
-    )   
+    )
 }
 
 export default Editor

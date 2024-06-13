@@ -1,10 +1,10 @@
 import express from "express"
 import { createServer } from "node:http";
 import { Server } from "socket.io";
-import { ACTIONS } from "./SocketActions";
-import path from "node:path";
-import { fileURLToPath } from 'url';
+import { ACTIONS } from "./SocketActions.js";
+import dotenv from "dotenv"
 
+dotenv.config();
 const app = express();
 const server = createServer(app);
 const io = new Server(server,{ cors: {
@@ -12,15 +12,6 @@ const io = new Server(server,{ cors: {
     methods: ["GET", "POST"]
 }});
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-
-app.use(express.static(path.join(__dirname, './dist')));
-// Fallback to index.html for single-page applications
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, './dist/index.html'));
-});
 
 app.get("/", (req, res) => {
     res.send("<h1>hello worldd</h1>");
@@ -76,6 +67,13 @@ io.on("connection", (socket) => {
         io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code });
     });
 
+    //listening to output_code change
+    socket.on(ACTIONS.OUTPUT_CODE, ({ roomId, output }) => {
+        //sending output data to all clients
+        io.to(roomId).emit(ACTIONS.OUTPUT_CODE, { output });
+    });
+
+
 
     socket.on("disconnecting", () => {
         const rooms = [...socket.rooms]; // getting all rooms to which client is connected
@@ -89,7 +87,7 @@ io.on("connection", (socket) => {
         socket.leave();
     })
 })
-
-server.listen(5000, () => {
-    console.log("server running on port 5000")
+const port = process.env.PORT || 5000
+server.listen(port, () => {
+    console.log(`server running on port ${port}`);
 })
