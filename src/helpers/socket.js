@@ -6,5 +6,5 @@ export const initSocket = async () => {
         timeout: 10000,
         transports: ['websocket'],
     };
-    return io(import.meta.env.BACKEND_URL, options);
+    return io("https://onlinecodeserver.onrender.com", options);
 };
