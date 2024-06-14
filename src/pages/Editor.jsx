@@ -8,6 +8,8 @@ import { useGlobalContext } from '../context/GlobalContext';
 import { toast } from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
 import { executeCode } from '../helpers/api.js';
+import Avatar from 'react-avatar'
+import ChatBox from '../component/ChatBox';
 
 function Editor() {
 
@@ -16,14 +18,16 @@ function Editor() {
     const outPutRef = useRef(null);
     const dataContext = useGlobalContext();//getting context values
     const navigate = useNavigate();
-    const { roomId } = useParams()
+    const { roomId } = useParams();
+    const [messages,setMessages]=useState([]);
+
     const [clients, setClients] = useState([{
-        socketId:1,
-        username:"akash"
+        socketId: 1,
+        username: "akash"
     }])
 
     const phoneStyle = "absolute w-full top-[50px]  z-10 block";
-    const [menu,setMenu]=useState(false);
+    const [menu, setMenu] = useState(false);
 
     useEffect(() => {
         const init = async () => {
@@ -46,6 +50,7 @@ function Editor() {
             socketRef.current.on(ACTIONS.JOINED, ({ clients, username, socketId }) => {
                 setClients(clients);
                 console.log(username);
+
                 if (username !== dataContext.userName) {
                     toast.success(`${username} joined the room.`);
                     console.log(`${username} joined`);
@@ -65,6 +70,10 @@ function Editor() {
 
             })
 
+            socketRef.current.on('chat-message', ({ username, message }) => {
+                setMessages((prev)=>{ return [...prev,{username,message}]});
+            });
+
 
             //listening for diconnecting
             socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
@@ -81,13 +90,14 @@ function Editor() {
             socketRef.current.disconnect();
             socketRef.current.off(ACTIONS.JOINED);
             socketRef.current.off(ACTIONS.DISCONNECTED);
+            socketRef.current.off('chat-message');
         }
 
     }, [])
 
     const RunCode = async () => {
         try {
-            const code = codeRef.current; 
+            const code = codeRef.current;
             const data = await executeCode(code);
             // console.log(data);
             outPutRef.current.value = data.run.output;
@@ -117,15 +127,18 @@ function Editor() {
         navigate("/");
     }
 
+   
+
+
     return (
         <>
             {/* wrapper */}
             <div className='flex w-full h-[100vh]'>
                 {/*left side container */}
                 <aside className='text-white pl-2 pt-2 md:hidden'>
-                    <button className='font-bold text-xl border px-2 pb-1' onClick={()=>setMenu(!menu)}>=</button>
+                    <button className='font-bold text-xl border rounded-md px-2 pb-1 transition-all' onClick={() => setMenu(!menu)}>{menu ? "X" : "="}</button>
                 </aside>
-                <aside className={`bg-[#640D6B] border-r rounded-lg border-r-white md:w-[300px] h-full md:flex flex-col justify-between mr-2 py-4 px-4 ${menu ? phoneStyle :'hidden' }`}>
+                <aside className={`bg-[#640D6B] border-r rounded-lg border-r-white md:w-[300px] h-full md:flex flex-col justify-between mr-2 py-4 px-4 ${menu ? phoneStyle : 'hidden'}`}>
                     <div>
                         <AppTitle />
                         <div className='text-white mt-2'>
@@ -134,7 +147,7 @@ function Editor() {
                             {/* connected clients */}
                             <div className='flex flex-wrap'>
                                 {
-                                   clients && clients.map((client) => (
+                                    clients && clients.map((client) => (
                                         <Client key={client.socketId} username={client.username} />
                                     ))
                                 }
@@ -158,6 +171,9 @@ function Editor() {
                     <textarea className='h-[40vh] w-full bg-slate-900 text-white outline-none  px-6' placeholder='output:' id="OutputBox" ref={outPutRef}>
                     </textarea>
                 </aside>
+
+                {/* chat window */}
+                <ChatBox messages={messages} socketRef={socketRef} roomId={roomId} />
 
             </div>
 
