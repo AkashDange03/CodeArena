@@ -19,7 +19,7 @@ function Editor() {
     const dataContext = useGlobalContext();//getting context values
     const navigate = useNavigate();
     const { roomId } = useParams();
-    const [messages,setMessages]=useState([]);
+    const [messages, setMessages] = useState([]);
 
     const [clients, setClients] = useState([{
         socketId: 1,
@@ -71,7 +71,7 @@ function Editor() {
             })
 
             socketRef.current.on('chat-message', ({ username, message }) => {
-                setMessages((prev)=>{ return [...prev,{username,message}]});
+                setMessages((prev) => { return [...prev, { username, message }] });
             });
 
 
@@ -127,7 +127,7 @@ function Editor() {
         navigate("/");
     }
 
-   
+
 
 
     return (
@@ -138,14 +138,14 @@ function Editor() {
                 <aside className='text-white pl-2 pt-2 md:hidden'>
                     <button className='font-bold text-xl border rounded-md px-2 pb-1 transition-all' onClick={() => setMenu(!menu)}>{menu ? "X" : "="}</button>
                 </aside>
-                <aside className={`bg-[#640D6B] border-r rounded-lg border-r-white md:w-[300px] h-full md:flex flex-col justify-between mr-2 py-4 px-4 ${menu ? phoneStyle : 'hidden'}`}>
+                <aside className={`bg-PrimaryColor  border-r border-gray-500 mr-1 md:w-[300px] h-full md:flex flex-col justify-between py-4 px-4 ${menu ? phoneStyle : 'hidden'}`}>
                     <div>
                         <AppTitle />
-                        <div className='text-white mt-2'>
+                        <div className='text-white mt-2 '>
                             <div className='border-2 border-b-white '></div>
                             <h2 className='font-bold my-4'>connected</h2>
                             {/* connected clients */}
-                            <div className='flex flex-wrap'>
+                            <div className='flex flex-col gap-2 bg-SecondaryColor h-[60vh] rounded-md overflow-auto'>
                                 {
                                     clients && clients.map((client) => (
                                         <Client key={client.socketId} username={client.username} />
@@ -157,19 +157,22 @@ function Editor() {
 
                     <div className='flex flex-col gap-2'>
                         <button className='bg-white text-black px-10 py-2 rounded-md' onClick={copyRoomId}>Copy Room Id</button>
-                        <button className='bg-green-600 px-10 py-2 rounded-md text-white font-bold' onClick={leave}>Leave</button>
+                        <button className='bg-ButtonColor shadow hover:shadow-lg hover:bg-blue-600 px-10 py-2 rounded-md text-white font-bold' onClick={leave}>Leave</button>
                     </div>
 
                 </aside>
 
                 {/* Right side container */}
-                <aside className='w-[80%] flex flex-col'>
+                <aside className='w-[80%] flex flex-col mx-1'>
                     <div className='flex justify-center'>
-                        <button className='bg-green-600 px-10 py-2 rounded-md my-2 text-white font-bold' onClick={RunCode}>Run</button>
+                        <button className='bg-ButtonColor shadow hover:shadow-lg hover:bg-blue-600 px-10 py-2 rounded-md my-2 text-white font-bold' onClick={RunCode}>{'> Run'}</button>
                     </div>
                     <EditorComponent socketRef={socketRef} roomId={roomId} onCodeChange={(code) => codeRef.current = code} />
-                    <textarea className='h-[40vh] w-full bg-slate-900 text-white outline-none  px-6' placeholder='output:' id="OutputBox" ref={outPutRef}>
-                    </textarea>
+                    <div className='bg-PrimaryColor h-[40vh] '>
+                        <textarea className='w-full h-[90%] bg-SecondaryColor text-white outline-none rounded-md  px-6 my-2' placeholder='output:' id="OutputBox" ref={outPutRef}>
+                        </textarea>
+                    </div>
+
                 </aside>
 
                 {/* chat window */}

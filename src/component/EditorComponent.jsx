@@ -31,7 +31,7 @@ function EditorComponent({socketRef,roomId,onCodeChange}) {
         };
     }, [socketRef.current]);
 
-    return <CodeMirror className='text-lg'  value={value} height="60vh" theme={dracula} extensions={[javascript({ jsx: true })]} onChange={onChange} />;
+    return <CodeMirror className='text-lg '  value={value} height="60vh" theme={dracula} extensions={[javascript({ jsx: true })]} onChange={onChange} />;
 }
 
 export default EditorComponent

@@ -37,7 +37,7 @@ function Home() {
             <div className='w-full h-[100vh] flex flex-col justify-center items-center'>
 
                 {/* input container */}
-                <div className='flex flex-col justify-center items-center w-[400px] h-auto bg-[#640D6B] text-white p-6 gap-4 rounded-md'>
+                <div className='flex flex-col justify-center items-center w-[400px] h-auto bg-SecondaryColor border-2 border-activeColor shadow-xl text-white p-6 gap-4 rounded-md'>
 
                     {/* logo and app name */}
                     <AppTitle/>
@@ -47,7 +47,7 @@ function Home() {
                     <div className='flex flex-col justify-center items-center w-full  gap-4'>
 
                         <input
-                            className='w-full px-4 py-2 rounded-md text-black '
+                            className='w-full px-4 py-2 rounded-md text-black outline-ButtonColor '
                             type="text"
                             placeholder='Enter room id'
                             onChange={(e)=>setroomId(e.target.value)}
@@ -55,7 +55,7 @@ function Home() {
                         />
 
                         <input
-                            className='w-full px-4 py-2 rounded-md text-black '
+                            className='w-full px-4 py-2 rounded-md text-black outline-ButtonColor '
                             type="text"
                             placeholder='Enter username'
                             onChange={(e)=>setUserName(e.target.value)}
@@ -63,10 +63,10 @@ function Home() {
                         />
 
                         <div className='w-full flex justify-end'>
-                            <button className='bg-green-500 px-10 py-2 rounded-md' onClick={joinRoom}>Join</button>
+                            <button className='bg-ButtonColor shadow hover:shadow-lg hover:bg-blue-600 px-10 py-2 rounded-md' onClick={joinRoom}>Join</button>
                         </div>
 
-                        <span className='text-sm'>If you dont't have an invite please create <a className='underline underline-offset-1 text-green-400 ' href="#" onClick={createRoomId}>new room</a> </span>
+                        <span className='text-sm'>If you dont't have an invite please create <a className='underline underline-offset-1 text-ButtonColor ' href="#" onClick={createRoomId}>new room</a> </span>
                     </div>
 
                 </div>
