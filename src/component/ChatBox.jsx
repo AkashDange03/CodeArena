@@ -40,7 +40,7 @@ function ChatBox({ messages, socketRef, roomId }) {
                                 <Avatar name={message.username} size={30} round="14px" className='ml-2 my-auto' />
                                 <div className={ `flex flex-col gap-2   text-white px-2 text-md font-thin my-auto  `}>
                                     <p className='text-[10px]  font-thin text-white'>{message.username}</p>
-                                    <div className='bg-PrimaryColor px-4 py-4 rounded-md text-sm  h-auto text-justify overflow-hidden '>
+                                    <div className='bg-PrimaryColor px-4 py-4 rounded-md text-sm  h-auto  overflow-hidden '>
                                     {`${message.message}`}
                                     </div>
                                 </div>
