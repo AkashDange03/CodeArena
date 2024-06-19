@@ -73,9 +73,9 @@ io.on("connection", (socket) => {
         io.to(roomId).emit(ACTIONS.OUTPUT_CODE, { output });
     });
 
-    socket.on('chat-message',({roomId,message,username})=>{
+    socket.on(ACTIONS.CHAT_MESSAGE,({roomId,message,username})=>{
         // console.log(username+" : "+ message)
-        io.to(roomId).emit('chat-message',{message,username});
+        io.to(roomId).emit(ACTIONS.CHAT_MESSAGE,{message,username});
     })
 
 

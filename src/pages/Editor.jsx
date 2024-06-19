@@ -26,8 +26,9 @@ function Editor() {
         username: "akash"
     }])
 
-    const phoneStyle = "absolute w-full top-[50px]  z-10 block";
+    const phoneStyle = "absolute w-full   z-10 block";
     const [menu, setMenu] = useState(false);
+    const [displayChat, setDisplayChat] = useState(false)
 
     useEffect(() => {
         const init = async () => {
@@ -70,7 +71,7 @@ function Editor() {
 
             })
 
-            socketRef.current.on('chat-message', ({ username, message }) => {
+            socketRef.current.on(ACTIONS.CHAT_MESSAGE, ({ username, message }) => {
                 setMessages((prev) => { return [...prev, { username, message }] });
             });
 
@@ -90,7 +91,7 @@ function Editor() {
             socketRef.current.disconnect();
             socketRef.current.off(ACTIONS.JOINED);
             socketRef.current.off(ACTIONS.DISCONNECTED);
-            socketRef.current.off('chat-message');
+            socketRef.current.off(ACTIONS.CHAT_MESSAGE);
         }
 
     }, [])
@@ -138,9 +139,15 @@ function Editor() {
                 <aside className='text-white pl-2 pt-2 md:hidden'>
                     <button className='font-bold text-xl border rounded-md px-2 pb-1 transition-all' onClick={() => setMenu(!menu)}>{menu ? "X" : "="}</button>
                 </aside>
-                <aside className={`bg-PrimaryColor  border-r border-gray-500 mr-1 md:w-[300px] h-full md:flex flex-col justify-between py-4 px-4 ${menu ? phoneStyle : 'hidden'}`}>
+
+                <aside className={`bg-PrimaryColor  border-r border-gray-500 mr-1 md:w-[20vw] h-full md:flex flex-col justify-between py-4 px-4 ${menu ? phoneStyle : 'hidden'}`}>
                     <div>
-                        <AppTitle />
+                        <div className='flex'>
+                            <AppTitle />
+                            <div className='w-[40%] flex justify-end md:hidden  '>
+                                <h1 className='rounded-md text-md px-2 my-auto bg-ButtonColor' onClick={() => setMenu((prev) => !prev)}>X</h1>
+                            </div>
+                        </div>
                         <div className='text-white mt-2 '>
                             <div className='border-2 border-b-white '></div>
                             <h2 className='font-bold my-4'>connected</h2>
@@ -155,28 +162,34 @@ function Editor() {
                         </div>
                     </div>
 
-                    <div className='flex flex-col gap-2'>
+                    <div className='flex flex-col gap-2 mt-2'>
                         <button className='bg-white text-black px-10 py-2 rounded-md' onClick={copyRoomId}>Copy Room Id</button>
                         <button className='bg-ButtonColor shadow hover:shadow-lg hover:bg-blue-600 px-10 py-2 rounded-md text-white font-bold' onClick={leave}>Leave</button>
                     </div>
 
                 </aside>
 
-                {/* Right side container */}
-                <aside className='w-[80%] flex flex-col mx-1'>
+                {/* editior window */}
+                <aside className='flex w-[80vw] flex-col mx-1'>
                     <div className='flex justify-center'>
                         <button className='bg-ButtonColor shadow hover:shadow-lg hover:bg-blue-600 px-10 py-2 rounded-md my-2 text-white font-bold' onClick={RunCode}>{'> Run'}</button>
                     </div>
-                    <EditorComponent socketRef={socketRef} roomId={roomId} onCodeChange={(code) => codeRef.current = code} />
+                    <div className='md:w-[61vw] w-full'>
+                        <EditorComponent socketRef={socketRef} roomId={roomId} onCodeChange={(code) => codeRef.current = code} />
+                    </div>
                     <div className='bg-PrimaryColor h-[40vh] '>
                         <textarea className='w-full h-[90%] bg-SecondaryColor text-white outline-none rounded-md  px-6 my-2' placeholder='output:' id="OutputBox" ref={outPutRef}>
                         </textarea>
                     </div>
 
                 </aside>
+                <div className='absolute top-[89%] right-[5%] md:hidden'>
+                    <button className='bg-ButtonColor rounded-full px-4 py-4 ' onClick={()=>setDisplayChat((prev)=>!prev)}><i className="fa-brands fa-rocketchat "></i></button>
+                </div>
 
                 {/* chat window */}
-                <ChatBox messages={messages} socketRef={socketRef} roomId={roomId} />
+                    <ChatBox messages={messages} socketRef={socketRef} roomId={roomId} setDisplayChat={setDisplayChat} displayChat={displayChat} phoneStyle={phoneStyle} />
+
 
             </div>
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-function AppTitle() {
+function AppTitle({setMenu}) {
     return (
         <>
             <div className='flex justify-start w-full gap-2'>
