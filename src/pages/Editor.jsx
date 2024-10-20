@@ -99,6 +99,7 @@ function Editor() {
     const RunCode = async () => {
         try {
             const code = codeRef.current;
+            console.log(code);
             const data = await executeCode(code);
             // console.log(data);
             outPutRef.current.value = data.run.output;

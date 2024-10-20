@@ -11,8 +11,9 @@ export const useGlobalContext= () => useContext(userContext);
 //created provider and any child that is wrapped around this component will have access to values
 function GlobalContext({ children }) {
     const [userName, setUserName] = useState("");
+    const [language,setLanguage] = useState("js");
     return (
-        <userContext.Provider value={{ userName, setUserName }}>{children}</userContext.Provider>
+        <userContext.Provider value={{ userName, setUserName,language,setLanguage }}>{children}</userContext.Provider>
     )
 }
 

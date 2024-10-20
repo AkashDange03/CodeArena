@@ -1,11 +1,16 @@
 import React, { useEffect } from 'react'
 import CodeMirror from '@uiw/react-codemirror';
 import { autoCloseTags, javascript } from '@codemirror/lang-javascript';
+import {java} from '@codemirror/lang-java'
 import {dracula} from "@uiw/codemirror-theme-dracula"
 import { ACTIONS } from '../helpers/SocketActions.js';
 
 function EditorComponent({socketRef,roomId,onCodeChange}) {
-    const [value, setValue] = React.useState("console.log('hello world!');");
+    const [value, setValue] = React.useState(`public class Main {
+        public static void main(String[] args) {
+            System.out.println("Hello, Java World!");
+        }
+    }`);
 
     const onChange = React.useCallback((code, viewUpdate) => {
         // console.log('val:', code);
@@ -31,7 +36,7 @@ function EditorComponent({socketRef,roomId,onCodeChange}) {
         };
     }, [socketRef.current]);
 
-    return <CodeMirror className='text-lg '  value={value} height="60vh" theme={dracula} extensions={[javascript({ jsx: true })]} onChange={onChange} />;
+    return <CodeMirror className='text-lg '  value={value} height="60vh" theme={dracula} extensions={[java()]} onChange={onChange} />;
 }
 
 export default EditorComponent

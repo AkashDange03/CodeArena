@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@codemirror/lang-java": "^6.0.1",
     "@codemirror/lang-javascript": "^6.2.2",
     "@uiw/codemirror-theme-darcula": "^4.22.2",
     "@uiw/codemirror-theme-dracula": "^4.22.2",
