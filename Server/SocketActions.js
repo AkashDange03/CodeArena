@@ -6,5 +6,6 @@ export const ACTIONS = {
     SYNC_CODE : 'sync-code',
     OUTPUT_CODE:"output-code",
     CHAT_MESSAGE:"chat-message",
+    LANGUAGE_CHANGE:"language-change",
     LEAVE: 'leave'
 }

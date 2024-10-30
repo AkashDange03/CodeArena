@@ -8,3 +8,5 @@ export const initSocket = async () => {
     };
     return io("https://onlinecodeserver.onrender.com", options);
 };
+//http://localhost:5000/
+//https://onlinecodeserver.onrender.com

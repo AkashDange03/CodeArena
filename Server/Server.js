@@ -78,6 +78,10 @@ io.on("connection", (socket) => {
         io.to(roomId).emit(ACTIONS.CHAT_MESSAGE,{message,username});
     })
 
+    socket.on(ACTIONS.LANGUAGE_CHANGE,({roomId,language})=>{
+        console.log(roomId + " " +language);
+        io.to(roomId).emit(ACTIONS.LANGUAGE_CHANGE,{language});
+    })
 
 
     socket.on("disconnecting", () => {

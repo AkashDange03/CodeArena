@@ -4,13 +4,22 @@ import { autoCloseTags, javascript } from '@codemirror/lang-javascript';
 import {java} from '@codemirror/lang-java'
 import {dracula} from "@uiw/codemirror-theme-dracula"
 import { ACTIONS } from '../helpers/SocketActions.js';
-
+import { useGlobalContext } from '../context/GlobalContext.jsx';
+import { languages } from '../helpers/langaugeApi.js';
 function EditorComponent({socketRef,roomId,onCodeChange}) {
+    const {Language,setLanguage} = useGlobalContext();
     const [value, setValue] = React.useState(`public class Main {
         public static void main(String[] args) {
             System.out.println("Hello, Java World!");
         }
     }`);
+
+    // Set the initial code snippet based on the selected language
+    useEffect(() => {
+        const languageSnippet = languages.find(lang => lang.name === Language)?.helloWorldSnippet || '';
+        setValue(languageSnippet);
+      }, [Language]);
+
 
     const onChange = React.useCallback((code, viewUpdate) => {
         // console.log('val:', code);
