@@ -25,6 +25,7 @@ function Editor() {
     const [messages, setMessages] = useState([]);
 
     const {Language,setLanguage} = useGlobalContext();
+    const [loading,setLoading] = useState(false);
 
     const [clients, setClients] = useState([{
         socketId: 1,
@@ -111,6 +112,7 @@ function Editor() {
 
     const RunCode = async () => {
         try {
+            setLoading(true);
             const code = codeRef.current;
             console.log(code);
             const data = await executeCode(code,Language);
@@ -125,6 +127,8 @@ function Editor() {
 
         } catch (err) {
             console.error("Error running code:", err);
+        }finally{
+            setLoading(false);
         }
     };
 
@@ -199,7 +203,7 @@ function Editor() {
                     {/* editior window */}
                     <aside className='flex w-[80vw] flex-col mx-1'>
                         <div className='flex justify-center gap-2'>
-                            <button className='px-5 py-2 text-sm font-thin bg-ButtonColor shadow hover:shadow-lg hover:bg-blue-600 md:px-10 md:py-2 rounded-md my-2 text-white md:font-bold' onClick={RunCode}>{'Run'}</button>
+                            <button className='px-5 py-2 text-sm font-thin bg-ButtonColor shadow hover:shadow-lg hover:bg-blue-600 md:px-10 md:py-2 rounded-md my-2 text-white md:font-bold' onClick={RunCode}>{ !loading ? 'Run' : 'Stop' }</button>
                             <button className='px-5 py-2 text-sm font-thin bg-ButtonColor shadow hover:shadow-lg hover:bg-blue-600 md:px-10 md:py-2 rounded-md my-2 text-white md:font-bold' onClick={SaveCode}>{'Save'}</button>
                             <LanguageSelector  socketRef={socketRef} roomId={roomId}/>
                         </div>
